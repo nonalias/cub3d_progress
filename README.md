@@ -1,3 +1,5 @@
+# cub3D
+
 # 👉텍스쳐 표현하기
 
 ---
@@ -114,7 +116,7 @@
     - texNum (방위) 를 확인해본 결과 -1값이 나오지 않은 것으로 보아 이 값에서 seg fault가 뜬 건 아니다.
     - 우연히, printf를 실행해보니 꺼지지 않고 잘 실행되어 그 결과를 캡쳐해 두었다.
 
-    ![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/bba0238e-1bdb-49da-8597-060e9f320317/_2020-08-08__5.15.02.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/bba0238e-1bdb-49da-8597-060e9f320317/_2020-08-08__5.15.02.png)
+    ![cub3D%20676852cad05841448382f6325d7cff88/_2020-08-08__5.15.02.png](cub3D%20676852cad05841448382f6325d7cff88/_2020-08-08__5.15.02.png)
 
     - 코드를 일일히 확인해 본 결과, 색상을 받아오는 과정에서 문제가 생긴 것이 아닌, 색상을 집어 넣는 과정인 shopping_draw의 game→img.data[to_coord()] = color 이 부분에서 문제가 생긴 것을 확인하였다.
         - y값이 double 이어서 그런가 ? → int로 바꾸었는데도 튕김
@@ -141,7 +143,7 @@
     - 전체 y 길이: 가리키는 y좌표 = TEX의 y 길이 : texY
 - 그랬더니 다음과 같이 결과가 나옴
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ce3639ec-7b85-43b3-bba3-2dab261e407d/_2020-08-08__7.29.10.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ce3639ec-7b85-43b3-bba3-2dab261e407d/_2020-08-08__7.29.10.png)
+![cub3D%20676852cad05841448382f6325d7cff88/_2020-08-08__7.29.10.png](cub3D%20676852cad05841448382f6325d7cff88/_2020-08-08__7.29.10.png)
 
 - 이는 전체 맵에 대해서 해당 texture에 대한 부분만 표현할 뿐, 타일별로 텍스쳐가 나뉘지 않았음. (하나로 보임.) 다시 말해, 왼쪽에 보이는 쿠키모양의 타일은 북쪽 텍스쳐에서 왼쪽 부분에 해당한다는 것임.
 - 📌그렇다면, 타일별로 출력하려면 어떻게 해야만 할까?
@@ -158,7 +160,7 @@
 - 그 결과는 다음과 같다.
 - 
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/16fcd535-83c2-4a6a-a3b6-6b076217ffad/_2020-08-08__9.56.41.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/16fcd535-83c2-4a6a-a3b6-6b076217ffad/_2020-08-08__9.56.41.png)
+![cub3D%20676852cad05841448382f6325d7cff88/_2020-08-08__9.56.41.png](cub3D%20676852cad05841448382f6325d7cff88/_2020-08-08__9.56.41.png)
 
 - 일단, 거리에 따라 텍스쳐가 바뀌는 현상은 사라졌지만, 초 근거리로 갈경우 왜곡이 생기고 텍스쳐의 모양 또한 정상적이지 않음.
 - 📌따라서, 다음 시간에는 직접 xpm파일을 이미지화 하여 받아오고, 그 이미지 배열을 토대로 다시한번 짜보자.
@@ -178,9 +180,9 @@
 
 - xpm파일을 열어보면 비교적 형식이 갖추어져 있는 것을 볼 수 있는데,  한 예시를 들어보면 다음과 같다.
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9d2f32da-151f-4311-a772-100c53310f5e/_2020-08-09__2.30.48.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9d2f32da-151f-4311-a772-100c53310f5e/_2020-08-09__2.30.48.png)
+![cub3D%20676852cad05841448382f6325d7cff88/_2020-08-09__2.30.48.png](cub3D%20676852cad05841448382f6325d7cff88/_2020-08-09__2.30.48.png)
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9de384ab-981f-4612-8eb0-ef613276d6ca/_2020-08-09__2.31.55.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9de384ab-981f-4612-8eb0-ef613276d6ca/_2020-08-09__2.31.55.png)
+![cub3D%20676852cad05841448382f6325d7cff88/_2020-08-09__2.31.55.png](cub3D%20676852cad05841448382f6325d7cff88/_2020-08-09__2.31.55.png)
 
 - 추측상, xpm파일은 c언어 기반으로 이미지를 만드는 것으로 판단된다.
 - 주석에 나와있는 대로, colums는 열의 개수, rows는 행의 개수, 그리고 각각 해쉬와 비슷하다고 볼 수 있게 어떤 문자에 대한 색상을 라인별로 나타내었다.
@@ -202,7 +204,7 @@
 
 - 우선, xpm파일을 읽어들여 맵에 출력하는 것 성공하였음
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e67f9263-305e-41bf-a90c-3ee3c30c6abb/_2020-08-09__2.58.59.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e67f9263-305e-41bf-a90c-3ee3c30c6abb/_2020-08-09__2.58.59.png)
+![cub3D%20676852cad05841448382f6325d7cff88/_2020-08-09__2.58.59.png](cub3D%20676852cad05841448382f6325d7cff88/_2020-08-09__2.58.59.png)
 
 - 다만, 전처럼 픽셀이 깨져서 보이고 (잘못 접근한 것임), 타일별로 칸이 나뉘지 않음.
 - 📌오늘은 어제 끝내지 못했던 이 공식을 제대로 수정해보고, 타일이 제대로 나오도록 출력하는 것을 목표로 하자.
@@ -215,3 +217,4 @@
 - calc함수 → 아마 raycasting한 후, 컬러 까지 넣어주는 함수를 합친 것 같다.
 - x : 0부터 width까지 도는 것으로 보아, 아마 3d를 출력하기 위한 x좌표? 인듯 하다.
 - cameraX : x가 0일땐 -1, x가 width일 땐 1이다.
+
