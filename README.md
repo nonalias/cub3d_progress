@@ -162,3 +162,56 @@
 
 - 일단, 거리에 따라 텍스쳐가 바뀌는 현상은 사라졌지만, 초 근거리로 갈경우 왜곡이 생기고 텍스쳐의 모양 또한 정상적이지 않음.
 - 📌따라서, 다음 시간에는 직접 xpm파일을 이미지화 하여 받아오고, 그 이미지 배열을 토대로 다시한번 짜보자.
+
+---
+
+### 텍스쳐 파일(XPM) 생성하기
+
+- 우선, 그리고 싶은 이미지를 찾는다.
+- 사이즈는 상관 없지만, 최대한 64 * 64 형식을 맞추는 것이 좋다.
+- 만약 64 * 64 보다 더 큰 파일을 읽어올 경우, TEX_WIDTH와 TEX_HEIGHT를 바꾸어주면 된다.
+- 또, 사이즈 변환 사이트 ([https://www.iloveimg.com/ko](https://www.iloveimg.com/ko)) 와 파일 변환 사이트 ([https://convertio.co/kr/](https://convertio.co/kr/)) 를 이용하여, 사이즈를 64로 맞춘 후 xpm파일로 변환시켜 주면 mlx_xpm_to_image함수로 불러들일 수 있다.
+
+---
+
+### XPM 파일의 구성
+
+- xpm파일을 열어보면 비교적 형식이 갖추어져 있는 것을 볼 수 있는데,  한 예시를 들어보면 다음과 같다.
+
+![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9d2f32da-151f-4311-a772-100c53310f5e/_2020-08-09__2.30.48.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9d2f32da-151f-4311-a772-100c53310f5e/_2020-08-09__2.30.48.png)
+
+![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9de384ab-981f-4612-8eb0-ef613276d6ca/_2020-08-09__2.31.55.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/9de384ab-981f-4612-8eb0-ef613276d6ca/_2020-08-09__2.31.55.png)
+
+- 추측상, xpm파일은 c언어 기반으로 이미지를 만드는 것으로 판단된다.
+- 주석에 나와있는 대로, colums는 열의 개수, rows는 행의 개수, 그리고 각각 해쉬와 비슷하다고 볼 수 있게 어떤 문자에 대한 색상을 라인별로 나타내었다.
+- pixel은 특정 색상을 문자로 대치시켜 표현한 것으로 보인다. (줄 수를 세보면 64 by 64가 나온다.)
+
+---
+
+### mlx_xpm_to_image
+
+- xpm파일을 img형식으로 바꾸어주는 함수이다.
+- 이 함수를 사용하면, 이전에 시도해봤듯이 texture[][] 라는 배열에 각각에 색상이 담기게 된다.
+- 📌오늘은 xpm파일을 각각 동, 서, 남, 북으로 매칭시키고, 제대로 출력시키도록 하는게 목표이다.
+- ✅우선, .cub파일을 바탕으로 맵을 불러오는 작업은 나중에 map validation에서 진행하도록 하고, 지금은 파일 경로로 바로 읽어들여 그 xpm파일을 tex 구조체 안의 img[cardinal] 에 각각 담아보자.
+- 그 후, 담긴 이미지들을 불러들여 벽의 색상을 제대로 나오게 해 보자.
+
+---
+
+### 시행착오 1
+
+- 우선, xpm파일을 읽어들여 맵에 출력하는 것 성공하였음
+
+![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e67f9263-305e-41bf-a90c-3ee3c30c6abb/_2020-08-09__2.58.59.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e67f9263-305e-41bf-a90c-3ee3c30c6abb/_2020-08-09__2.58.59.png)
+
+- 다만, 전처럼 픽셀이 깨져서 보이고 (잘못 접근한 것임), 타일별로 칸이 나뉘지 않음.
+- 📌오늘은 어제 끝내지 못했던 이 공식을 제대로 수정해보고, 타일이 제대로 나오도록 출력하는 것을 목표로 하자.
+- ❓yohlee님의 03예제를 보면, xpm파일의 이미지를 그대로 사용하지 않고 texture 배열에 한번 넣었다가 쓰는 것을 볼 수 있다. 아마 할당해제 문제 때문일까?
+
+---
+
+### yohlee님의 코드 해석
+
+- calc함수 → 아마 raycasting한 후, 컬러 까지 넣어주는 함수를 합친 것 같다.
+- x : 0부터 width까지 도는 것으로 보아, 아마 3d를 출력하기 위한 x좌표? 인듯 하다.
+- cameraX : x가 0일땐 -1, x가 width일 땐 1이다.
